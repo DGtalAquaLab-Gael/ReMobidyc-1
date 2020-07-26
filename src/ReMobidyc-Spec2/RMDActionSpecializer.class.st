@@ -4,7 +4,6 @@ Class {
 	#instVars : [
 		'baseAction',
 		'parser',
-		'baseSourceText',
 		'nameField',
 		'replacementList',
 		'addReplacementButton',
@@ -19,41 +18,32 @@ Class {
 RMDActionSpecializer class >> defaultSpec [
 	<spec>
 	^ SpPanedLayout newVertical
-		position: 0.3;
+		position: 4.0 / 7.0;
 		add:
 			(SpBoxLayout newVertical
-				add: 'Original source' expand: false;
-				add: #baseSourceText;
+				add:
+					(SpBoxLayout newVertical
+						add: 'Name' expand: false;
+						add: #nameField width: 400;
+						yourself)
+					height: self inputTextHeight * 2;
+				add:
+					(SpBoxLayout newVertical
+						add: 'Replacements' expand: false;
+						add: #replacementList;
+						add:
+							(SpBoxLayout newHorizontal
+								add: #addReplacementButton width: self buttonHeight;
+								add: #removeReplacementButton width: self buttonHeight;
+								add: #editReplacementButton width: self buttonHeight;
+								yourself)
+							height: self buttonHeight;
+						yourself);
 				yourself);
 		add:
-			(SpPanedLayout newVertical
-				position: 4.0 / 7.0;
-				add:
-					(SpBoxLayout newVertical
-						add:
-							(SpBoxLayout newVertical
-								add: 'Name' expand: false;
-								add: #nameField width: 400;
-								yourself)
-							height: self inputTextHeight * 2;
-						add:
-							(SpBoxLayout newVertical
-								add: 'Replacements' expand: false;
-								add: #replacementList;
-								add:
-									(SpBoxLayout newHorizontal
-										add: #addReplacementButton width: self buttonHeight;
-										add: #removeReplacementButton width: self buttonHeight;
-										add: #editReplacementButton width: self buttonHeight;
-										yourself)
-									height: self buttonHeight;
-								yourself);
-						yourself);
-				add:
-					(SpBoxLayout newVertical
-						add: 'Source' expand: false;
-						add: #actionSourceText;
-						yourself);
+			(SpBoxLayout newVertical
+				add: 'Source' expand: false;
+				add: #actionSourceText;
 				yourself);
 		yourself
 ]
@@ -95,7 +85,6 @@ RMDActionSpecializer >> baseAction: aRMDActionDefinitionNode [
 
 { #category : #accessing }
 RMDActionSpecializer >> baseActionChanged [
-	self updateBaseSourceText.
 	self updateNameField.
 	self updateReplacementList.
 	self updateActionSourceText
@@ -116,9 +105,6 @@ RMDActionSpecializer >> editReplacement [
 { #category : #initialization }
 RMDActionSpecializer >> initializePresenters [
 	super initializePresenters.
-	baseSourceText := self newText
-		enabled: false;
-		yourself.
 	nameField := self newValidatedTextInput
 		validation:
 				[ :name | (self parser identifier end parse: name) isPetit2Failure not ];
@@ -178,11 +164,6 @@ RMDActionSpecializer >> removeReplacement [
 { #category : #updating }
 RMDActionSpecializer >> updateActionSourceText [
 	actionSourceText text: self actionSource
-]
-
-{ #category : #updating }
-RMDActionSpecializer >> updateBaseSourceText [
-	baseSourceText text: self baseSource
 ]
 
 { #category : #updating }
