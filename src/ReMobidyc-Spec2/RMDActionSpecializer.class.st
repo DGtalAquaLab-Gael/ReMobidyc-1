@@ -62,7 +62,9 @@ RMDActionSpecializer class >> defaultSpec [
 RMDActionSpecializer >> action [
 	^ baseAction
 		ifNotNil: [ (baseAction
-				copyReplace: (replacementList items collect: [ :pair | pair first -> pair second ]))
+				copyReplace:
+					(replacementList items collect: [ :pair | pair first -> pair second ])
+						asDictionary)
 				identifier:
 					(nameField lastValidText asString trim
 						ifNil: [ baseAction identifier ]) ]
@@ -87,7 +89,23 @@ RMDActionSpecializer >> baseAction [
 
 { #category : #accessing }
 RMDActionSpecializer >> baseAction: aRMDActionDefinitionNode [
-	baseAction := aRMDActionDefinitionNode
+	baseAction := aRMDActionDefinitionNode.
+	self baseActionChanged
+]
+
+{ #category : #accessing }
+RMDActionSpecializer >> baseActionChanged [
+	self updateBaseSourceText.
+	self updateNameField.
+	self updateReplacementList.
+	self updateActionSourceText
+]
+
+{ #category : #accessing }
+RMDActionSpecializer >> baseSource [
+	^ baseAction
+		ifNotNil: [ :actionDefinition | actionDefinition printString ]
+		ifNil: [ '' ]
 ]
 
 { #category : #operations }
@@ -160,4 +178,18 @@ RMDActionSpecializer >> removeReplacement [
 { #category : #updating }
 RMDActionSpecializer >> updateActionSourceText [
 	actionSourceText text: self actionSource
+]
+
+{ #category : #updating }
+RMDActionSpecializer >> updateBaseSourceText [
+	baseSourceText text: self baseSource
+]
+
+{ #category : #updating }
+RMDActionSpecializer >> updateNameField [
+	baseAction ifNotNil: [ nameField text: baseAction identifier ]
+]
+
+{ #category : #updating }
+RMDActionSpecializer >> updateReplacementList [
 ]
